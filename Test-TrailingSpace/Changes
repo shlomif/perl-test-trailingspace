@@ -1,2 +1,5 @@
+0.0101      Wed  8 Aug 22:07:11 IDT 2012
+    - Add $VERSION to lib/Test/TrailingSpace.pm .
+
 0.0100      Wed  8 Aug 21:44:02 IDT 2012
     -First release.
