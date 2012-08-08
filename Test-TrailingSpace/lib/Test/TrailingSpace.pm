@@ -2,6 +2,91 @@ use strict;
 use warnings;
 package Test::TrailingSpace;
 
+use autodie;
+
+use Test::More;
+
+use File::Find::Object::Rule 0.0301;
+
+sub new
+{
+    my $class = shift;
+
+    my $self = bless {}, $class;
+
+    $self->_init(@_);
+
+    return $self;
+}
+
+sub _filename_regex
+{
+    my $self = shift;
+
+    if (@_)
+    {
+        $self->{_filename_regex} = shift;
+    }
+
+    return $self->{_filename_regex};
+}
+
+sub _root_path
+{
+    my $self = shift;
+
+    if (@_)
+    {
+        $self->{_root_path} = shift;
+    }
+
+    return $self->{_root_path};
+}
+sub _init
+{
+    my ($self, $args) = @_;
+
+    $self->_root_path(exists($args->{root}) ? $args->{root} : '.');
+    $self->_filename_regex($args->{filename_regex});
+
+    return;
+}
+
+sub no_trailing_space
+{
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my ($self, $blurb) = @_;
+
+    my $num_found = 0;
+
+    my $subrule = File::Find::Object::Rule->new;
+
+    my $rule = $subrule->or(
+        $subrule->new->directory->name(qr/(?:\A|\/)(?:blib|_build|CVS|\.svn|\.bzr\.hg|\.git)\z/)->prune->discard,
+        $subrule->new->file()->name($self->_filename_regex())
+    )->start( $self->_root_path() );
+
+    while ( my $path = $rule->match() )
+    {
+        open my $fh, '<', $path;
+        LINES:
+        while (my $line = <$fh>)
+        {
+            chomp($line);
+            if ($line =~ /[ \t]+\r?\z/)
+            {
+                $num_found++;
+                diag ("Found trailing space in file '$path'");
+                last LINES;
+            }
+        }
+        close ($fh);
+    }
+
+    is ($num_found, 0, $blurb);
+}
+
 1;
 
 __END__
@@ -24,7 +109,7 @@ Test::TrailingSpace - test for trailing space in source files.
     );
 
     # TEST
-    $finder->is_without_trailing_space(
+    $finder->no_trailing_space(
         "No trailing space was found."
     );
 
@@ -42,7 +127,7 @@ the filename matching regular expression. All the files under root
 matching the pattern will be searched (excpet for those under version
 control directories, "blib", "_build", etc.).
 
-=head2 $finder->is_without_trailing_space($blurb)
+=head2 $finder->no_trailing_space($blurb)
 
 Determines if there is no trailing space in the source files. Returns 1
 if there isn't and 0 if there's not, and is equivalent to the Test::More::ok(),
