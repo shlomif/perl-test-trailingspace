@@ -113,6 +113,35 @@ Test::TrailingSpace - test for trailing space in source files.
         "No trailing space was found."
     );
 
+Or, if you want the test to be optional:
+
+    use Test::More;
+
+    eval "use Test::TrailingSpace";
+    if ($@)
+    {
+        plan skip_all => "Test::TrailingSpace required for trailing space test.";
+    }
+    else
+    {
+        plan tests => 1;
+    }
+
+    my $finder = Test::TrailingSpace->new(
+        {
+            root => '.',
+            filename_regex => qr/\.(?:t|pm|pl)\z/,
+        },
+    );
+
+    # TEST
+    $finder->no_trailing_space(
+        "No trailing space was found."
+    );
+
+
+
+
 =head1 DESCRIPTION
 
 This module is used to test for lack of trailing space. See the synopsis
