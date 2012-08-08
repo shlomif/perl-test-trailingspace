@@ -86,7 +86,7 @@ sub no_trailing_space
         close ($fh);
     }
 
-    is ($num_found, 0, $blurb);
+    return is ($num_found, 0, $blurb);
 }
 
 1;
@@ -160,9 +160,10 @@ control directories, "blib", "_build", etc.).
 
 =head2 $finder->no_trailing_space($blurb)
 
-Determines if there is no trailing space in the source files. Returns 1
-if there isn't and 0 if there's not, and is equivalent to the Test::More::ok(),
-with diagnostics if there is trailing space.
+Determines if there is no trailing space in the source files. Returns true
+no trailing space was found and false if trailing space was found.
+It is equivalent to Test::More::ok(), with diagnostics to report if there is
+trailing space.
 
 =head1 AUTHOR
 
