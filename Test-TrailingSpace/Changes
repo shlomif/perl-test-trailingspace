@@ -1,3 +1,6 @@
+0.0103      Sat 17 Nov 12:45:25 IST 2012
+    - Refer to Test::EOL in the documentation.
+
 0.0102      Wed  8 Aug 22:14:31 IDT 2012
     - Clarified the documentation for ->no_trailing_space.
         - Thanks to ik on Freenode.
