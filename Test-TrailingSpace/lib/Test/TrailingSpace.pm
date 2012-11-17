@@ -149,6 +149,12 @@ Or, if you want the test to be optional:
 This module is used to test for lack of trailing space. See the synopsis
 for more details.
 
+B<NOTE:> there is an older CPAN distribution titled L<Test::EOL> that also
+supports testing for trailing space / trailing whitespace, although it
+has some limitations that L<Test::TrailingSpace> does not have, and also
+only calls it "trailing whitespace", rather than "trailing space".
+Whenever possible, one should prefer to use it, instead of this module.
+
 =head1 METHODS
 
 =head2 new({ root => ".", filename_regex => qr/\. ... \z/,})
@@ -168,6 +174,16 @@ trailing space.
 =head1 AUTHOR
 
 Shlomi Fish, L<http://www.shlomifish.org/> .
+
+=head1 SEE ALSO
+
+=over 4
+
+=item * Test::EOL
+
+L<Test::EOL>
+
+=back
 
 =head1 COPYRIGHT & LICENSE
 
