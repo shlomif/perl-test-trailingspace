@@ -8,7 +8,7 @@ use Test::More;
 
 use File::Find::Object::Rule 0.0301;
 
-our $VERSION = '0.0103';
+our $VERSION = '0.0200';
 
 sub new
 {
@@ -44,12 +44,26 @@ sub _root_path
 
     return $self->{_root_path};
 }
+
+sub _abs_path_prune_re
+{
+    my $self = shift;
+
+    if (@_)
+    {
+        $self->{_abs_path_prune_re} = shift;
+    }
+
+    return $self->{_abs_path_prune_re};
+}
+
 sub _init
 {
     my ($self, $args) = @_;
 
     $self->_root_path(exists($args->{root}) ? $args->{root} : '.');
     $self->_filename_regex($args->{filename_regex});
+    $self->_abs_path_prune_re($args->{abs_path_prune_re});
 
     return;
 }
@@ -64,8 +78,21 @@ sub no_trailing_space
 
     my $subrule = File::Find::Object::Rule->new;
 
+    my $abs_path_prune_re = $self->_abs_path_prune_re();
+
     my $rule = $subrule->or(
         $subrule->new->directory->name(qr/(?:\A|\/)(?:blib|_build|CVS|\.svn|\.bzr\.hg|\.git)\z/)->prune->discard,
+        (defined ( $abs_path_prune_re )
+            ? (
+                $subrule->exec(
+                    sub {
+                        my (undef, $path) = @_;
+                        return $path =~ m/$abs_path_prune_re/;
+                    }
+                )->prune->discard,
+            )
+            : (),
+        ),
         $subrule->new->file()->name($self->_filename_regex())
     )->start( $self->_root_path() );
 
@@ -163,6 +190,22 @@ Constructs a new object with the root (that defaults to "." and
 the filename matching regular expression. All the files under root
 matching the pattern will be searched (excpet for those under version
 control directories, "blib", "_build", etc.).
+
+The C<'abs_path_prune_re'> parameter can be used to specify a regular
+expression to prune the absolute path based on, so as to ignore what is
+under there.
+
+So
+
+    my $finder = Test::TrailingSpace->new(
+        {
+            root => '.',
+            filename_regex => qr/\.(?:t|pm|pl)\z/,
+            abs_path_prune_re => qr#\Alib/sample-data#,
+        }
+    );
+
+Will ignore everything under C<lib/sample-data> .
 
 =head2 $finder->no_trailing_space($blurb)
 

@@ -1,3 +1,6 @@
+0.0200      Mon 27 May 13:09:33 IDT 2013
+    - Add the 'abs_path_prune_re' parameter to the constructor.
+
 0.0103      Sat 17 Nov 12:45:25 IST 2012
     - Refer to Test::EOL in the documentation.
 
