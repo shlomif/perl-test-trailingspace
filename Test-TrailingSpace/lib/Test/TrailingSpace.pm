@@ -81,7 +81,7 @@ sub no_trailing_space
     my $abs_path_prune_re = $self->_abs_path_prune_re();
 
     my $rule = $subrule->or(
-        $subrule->new->directory->name(qr/(?:\A|\/)(?:blib|_build|CVS|\.svn|\.bzr\.hg|\.git)\z/)->prune->discard,
+        $subrule->new->directory->name(qr/(?:\A|\/)(?:blib|_build|CVS|\.svn|\.bzr|\.hg|\.git)(?:\/|\z)/)->prune->discard,
         (defined ( $abs_path_prune_re )
             ? (
                 $subrule->exec(
