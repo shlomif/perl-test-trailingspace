@@ -1,0 +1,3 @@
+syntax: regexp
+
+^Test-TrailingSpace/Test-TrailingSpace-\d+\.\d+(?:/|\.tar\.gz$)
