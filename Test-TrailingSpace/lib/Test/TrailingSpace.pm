@@ -81,19 +81,23 @@ sub no_trailing_space
     my $abs_path_prune_re = $self->_abs_path_prune_re();
 
     my $rule = $subrule->or(
-        $subrule->new->directory->name(qr/(?:\A|\/)(?:blib|_build|CVS|\.svn|\.bzr|\.hg|\.git)(?:\/|\z)/)->prune->discard,
-        (defined ( $abs_path_prune_re )
-            ? (
-                $subrule->exec(
-                    sub {
-                        my (undef, $path) = @_;
-                        return $path =~ m/$abs_path_prune_re/;
-                    }
-                )->prune->discard,
-            )
-            : (),
-        ),
-        $subrule->new->file()->name($self->_filename_regex())
+        $subrule->new->directory->exec(
+            sub {
+                my (undef, undef, $path) = @_;
+                return
+                (
+                    ($path =~ /(?:\A|\/)(?:blib|_build|CVS|\.svn|\.bzr|\.hg|\.git)(?:\/|\z)/)
+                        or
+                    (
+                        defined($abs_path_prune_re)
+                        && ($path =~ m/$abs_path_prune_re/)
+                    )
+                );
+            }
+        )->prune->discard,
+        $subrule->new->file()
+        # ->exec(sub { print STDERR join(",", "Foo==", @_), "\n"; return 1; })
+        ->name($self->_filename_regex()),
     )->start( $self->_root_path() );
 
     while ( my $path = $rule->match() )

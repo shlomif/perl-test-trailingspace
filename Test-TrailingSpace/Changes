@@ -1,3 +1,7 @@
+0.0202      Mon 27 May 15:29:40 IDT 2013
+    - Fix the case where both abs_path_prune_re and the built-in prunes
+    match.
+
 0.0201      Mon 27 May 14:47:33 IDT 2013
     - Fix the regex for the matching of a .hg or .bzr directory.
 

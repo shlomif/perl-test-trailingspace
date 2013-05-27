@@ -5,7 +5,7 @@ use warnings;
 
 use lib './t/lib';
 
-use Test::Builder::Tester tests => 5;
+use Test::Builder::Tester tests => 6;
 
 use File::Path qw( rmtree );
 
@@ -304,5 +304,78 @@ use Test::TrailingSpace;
     test_out("ok 1 - trailing space.");
     $finder->no_trailing_space("trailing space.");
     test_test("no trailing space was reported with abs_path_prune_re and .hg");
+    rmtree($t->get_path("./$test_dir"))
+}
+
+{
+    my $test_id = "with-trailing-space-prune-hg";
+    my $test_dir = "t/sample-data/$test_id";
+    my $tree =
+    {
+        'name' => "$test_id/",
+        'subs' =>
+        [
+            {
+                'name' => "a/",
+                subs =>
+                [
+                    {
+                        'name' => "WithTrailingSpace.pm",
+                        'contents' => "Trail space here =     \nGamp\n",
+                    },
+                ],
+            },
+
+            {
+                'name' => "foo/",
+                'subs' =>
+                [
+                    {
+                        'name' => "t.door.txt",
+                        'contents' => "A T Door",
+                    },
+                    {
+                        'name' => "yet/",
+                    },
+                ],
+            },
+            {
+                'name' => ".hg/",
+                subs =>
+                [
+                    {
+                        'name' => "foo.pm",
+                        'contents' => "File with trailing space     \nhello\n",
+                    }
+                ],
+            },
+            {
+                'name' => "lib/",
+                subs =>
+                [
+                    {
+                        'name' => "MyFileWithSpace.pm",
+                        'contents' => "Trailing space===    \nFoo\n",
+                    },
+                ],
+            },
+        ],
+    };
+
+    my $t = File::Find::Object::TreeCreate->new();
+    $t->create_tree("./t/sample-data/", $tree);
+
+    my $finder = Test::TrailingSpace->new(
+        {
+            root => "./$test_dir",
+            filename_regex => qr/\.(?:pm|txt)\z/,
+            abs_path_prune_re => qr#(?:\A|/)lib(?:/|\z)#ms,
+        }
+    );
+
+    test_out("not ok 1 - with trailing space OGLO");
+    test_fail(+1);
+    $finder->no_trailing_space("with trailing space OGLO");
+    test_test(title => "with trailing space was reported for abs_path_prune_re", skip_err => 1,);
     rmtree($t->get_path("./$test_dir"))
 }
