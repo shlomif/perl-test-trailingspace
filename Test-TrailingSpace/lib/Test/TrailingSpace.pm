@@ -8,7 +8,7 @@ use Test::More;
 
 use File::Find::Object::Rule 0.0301;
 
-our $VERSION = '0.0201';
+our $VERSION = '0.0202';
 
 sub new
 {
