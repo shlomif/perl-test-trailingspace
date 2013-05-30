@@ -1,5 +1,7 @@
+0.0203      Fri 31 May 02:07:27 IDT 2013
     - Fix the detection of directories to prune (version-control/etc.)
     on systems that don't use "/"-es.
+    - Path fixes for t/object-test.t on Windows.
 
 0.0202      Mon 27 May 15:29:40 IDT 2013
     - Fix the case where both abs_path_prune_re and the built-in prunes
