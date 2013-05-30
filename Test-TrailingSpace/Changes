@@ -1,3 +1,6 @@
+    - Fix the detection of directories to prune (version-control/etc.)
+    on systems that don't use "/"-es.
+
 0.0202      Mon 27 May 15:29:40 IDT 2013
     - Fix the case where both abs_path_prune_re and the built-in prunes
     match.

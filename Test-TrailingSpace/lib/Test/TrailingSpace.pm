@@ -83,10 +83,10 @@ sub no_trailing_space
     my $rule = $subrule->or(
         $subrule->new->directory->exec(
             sub {
-                my (undef, undef, $path) = @_;
+                my ($shortname, undef, $path) = @_;
                 return
                 (
-                    ($path =~ /(?:\A|\/)(?:blib|_build|CVS|\.svn|\.bzr|\.hg|\.git)(?:\/|\z)/)
+                    ($shortname =~ /\A(?:blib|_build|CVS|\.svn|\.bzr|\.hg|\.git)\z/)
                         or
                     (
                         defined($abs_path_prune_re)
