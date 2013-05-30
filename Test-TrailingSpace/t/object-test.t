@@ -165,7 +165,7 @@ use Test::TrailingSpace;
         {
             root => $t->get_path("./$test_dir"),
             filename_regex => qr/\.(?:pm|txt)\z/,
-            abs_path_prune_re => qr#(?:\A|/)lib(?:/|\z)#ms,
+            abs_path_prune_re => qr#\blib\b#ms,
         }
     );
 
@@ -297,7 +297,7 @@ use Test::TrailingSpace;
         {
             root => $t->get_path("./$test_dir"),
             filename_regex => qr/\.(?:pm|txt)\z/,
-            abs_path_prune_re => qr#(?:\A|/)lib(?:/|\z)#ms,
+            abs_path_prune_re => qr#\blib\b#ms,
         }
     );
 
@@ -369,7 +369,7 @@ use Test::TrailingSpace;
         {
             root => $t->get_path("./$test_dir"),
             filename_regex => qr/\.(?:pm|txt)\z/,
-            abs_path_prune_re => qr#(?:\A|/)lib(?:/|\z)#ms,
+            abs_path_prune_re => qr#\blib\b#ms,
         }
     );
 
@@ -442,7 +442,7 @@ use Test::TrailingSpace;
         {
             root => $t->get_path("./$test_dir"),
             filename_regex => qr/\.(?:pm|txt)\z/,
-            abs_path_prune_re => qr#(?:\A|/)lib(?:/|\z)#ms,
+            abs_path_prune_re => qr#\blib\b#ms,
         }
     );
 
