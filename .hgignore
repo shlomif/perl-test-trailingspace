@@ -1,3 +1,4 @@
 syntax: regexp
 
+^Test-TrailingSpace/\.build
 ^Test-TrailingSpace/Test-TrailingSpace-\d+\.\d+(?:/|\.tar\.gz$)
