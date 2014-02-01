@@ -1,31 +1,32 @@
-0.0204
+0.0204  2014-02-01
     - Specify minimum version of perl to be 5.8. (CPANTS).
     - Add provides to META.yml (CPANTS).
+    - Add Test::CPAN::Changes.
 
-0.0203      Fri 31 May 02:07:27 IDT 2013
+0.0203  2013-05-31
     - Fix the detection of directories to prune (version-control/etc.)
     on systems that don't use "/"-es.
     - Path fixes for t/object-test.t on Windows.
 
-0.0202      Mon 27 May 15:29:40 IDT 2013
+0.0202  2013-05-27
     - Fix the case where both abs_path_prune_re and the built-in prunes
     match.
 
-0.0201      Mon 27 May 14:47:33 IDT 2013
+0.0201  2013-05-27
     - Fix the regex for the matching of a .hg or .bzr directory.
 
-0.0200      Mon 27 May 13:09:33 IDT 2013
+0.0200  2013-05-27
     - Add the 'abs_path_prune_re' parameter to the constructor.
 
-0.0103      Sat 17 Nov 12:45:25 IST 2012
+0.0103  2012-11-17
     - Refer to Test::EOL in the documentation.
 
-0.0102      Wed  8 Aug 22:14:31 IDT 2012
+0.0102  2012-08-08
     - Clarified the documentation for ->no_trailing_space.
         - Thanks to ik on Freenode.
 
-0.0101      Wed  8 Aug 22:07:11 IDT 2012
+0.0101  2012-08-08
     - Add $VERSION to lib/Test/TrailingSpace.pm .
 
-0.0100      Wed  8 Aug 21:44:02 IDT 2012
+0.0100  2012-08-08
     -First release.
