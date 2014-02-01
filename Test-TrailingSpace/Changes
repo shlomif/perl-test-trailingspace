@@ -1,3 +1,7 @@
+0.0204
+    - Specify minimum version of perl to be 5.8. (CPANTS).
+    - Add provides to META.yml (CPANTS).
+
 0.0203      Fri 31 May 02:07:27 IDT 2013
     - Fix the detection of directories to prune (version-control/etc.)
     on systems that don't use "/"-es.

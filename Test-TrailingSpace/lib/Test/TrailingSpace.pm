@@ -1,6 +1,9 @@
+package Test::TrailingSpace;
+
 use strict;
 use warnings;
-package Test::TrailingSpace;
+
+use 5.008;
 
 use autodie;
 
