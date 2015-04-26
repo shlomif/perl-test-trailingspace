@@ -217,7 +217,7 @@ Will ignore everything under C<lib/sample-data> .
 =head2 $finder->no_trailing_space($blurb)
 
 Determines if there is no trailing space in the source files. Returns true
-no trailing space was found and false if trailing space was found.
+if no trailing space was found, and false if trailing space was found.
 It is equivalent to Test::More::ok(), with diagnostics to report if there is
 trailing space.
 
