@@ -84,7 +84,7 @@ sub no_trailing_space
     my $abs_path_prune_re = $self->_abs_path_prune_re();
 
     my $rule = $subrule->or(
-        $subrule->new->directory->exec(
+        $subrule->new->exec(
             sub {
                 my ($shortname, undef, $path) = @_;
                 return
@@ -212,7 +212,9 @@ So
         }
     );
 
-Will ignore everything under C<lib/sample-data> .
+Will ignore everything under C<lib/sample-data> . Note that as of
+L<Test::TrailingSpace> version 0.0300 it can also be used to skip files with
+these filenames (e.g: C<< abs_path_prune_re => qr#\.patch\z# >>).
 
 =head2 $finder->no_trailing_space($blurb)
 
