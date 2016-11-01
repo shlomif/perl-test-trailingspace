@@ -10,6 +10,7 @@ my $finder = Test::TrailingSpace->new(
     {
         root => '.',
         filename_regex => qr/(?:\.(?:t|pm|pl|PL|yml|json))|README|Changes\z/,
+        abs_path_prune_re => qr/sample-data/,
     },
 );
 
