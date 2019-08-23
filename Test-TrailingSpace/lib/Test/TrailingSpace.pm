@@ -11,8 +11,6 @@ use Test::More;
 
 use File::Find::Object::Rule 0.0301;
 
-our $VERSION = '0.0301';
-
 sub new
 {
     my $class = shift;
@@ -174,9 +172,6 @@ Or, if you want the test to be optional:
     $finder->no_trailing_space(
         "No trailing space was found."
     );
-
-
-
 
 =head1 DESCRIPTION
 
