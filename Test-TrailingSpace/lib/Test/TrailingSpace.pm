@@ -238,12 +238,12 @@ under there.
 
 The C<'find_tabs'> option, if set to a true value,
 detects and reports for the presence of hard tabs
-(C<'\t'>).
+(C<'\t'>). (Added in version 0.0400)
 
 The C<'find_cr'> option, if set to a true value,
 detects and reports for the presence of carriage
 returns at the end of lines. (DOS-style line endings.)
-
+It was added in version 0.0400.
 So
 
     my $finder = Test::TrailingSpace->new(
@@ -276,6 +276,10 @@ Shlomi Fish, L<http://www.shlomifish.org/> .
 =item * Test::EOL
 
 L<Test::EOL>
+
+=item * Test::NoTabs
+
+L<Test::NoTabs>
 
 =back
 
