@@ -22,6 +22,18 @@ sub new
     return $self;
 }
 
+sub _find_tabs
+{
+    my $self = shift;
+
+    if (@_)
+    {
+        $self->{_find_tabs} = shift;
+    }
+
+    return $self->{_find_tabs};
+}
+
 sub _filename_regex
 {
     my $self = shift;
@@ -65,6 +77,7 @@ sub _init
     $self->_root_path(exists($args->{root}) ? $args->{root} : '.');
     $self->_filename_regex($args->{filename_regex});
     $self->_abs_path_prune_re($args->{abs_path_prune_re});
+    $self->_find_tabs($args->{find_tabs});
 
     return;
 }
@@ -80,6 +93,7 @@ sub no_trailing_space
     my $subrule = File::Find::Object::Rule->new;
 
     my $abs_path_prune_re = $self->_abs_path_prune_re();
+    my $find_tabs = $self->_find_tabs();
 
     my $rule = $subrule->or(
         $subrule->new->exec(
@@ -110,8 +124,14 @@ sub no_trailing_space
             chomp($line);
             if ($line =~ /[ \t]+\r?\z/)
             {
-                $num_found++;
+                ++$num_found;
                 diag ("Found trailing space in file '$path'");
+                last LINES;
+            }
+            if ($find_tabs and ($line =~ /\t/))
+            {
+                ++$num_found;
+                diag ("Found hard tabs in file '$path'");
                 last LINES;
             }
         }
@@ -196,6 +216,9 @@ control directories, "blib", "_build", etc.).
 The C<'abs_path_prune_re'> parameter can be used to specify a regular
 expression to prune the absolute path based on, so as to ignore what is
 under there.
+
+The C<'find_tabs'> detects and reports for the presence of hard tabs
+(C<'\t'>).
 
 So
 
