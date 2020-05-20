@@ -1,10 +1,8 @@
 package Test::TrailingSpace;
 
+use 5.014;
 use strict;
 use warnings;
-
-use 5.008;
-
 use autodie;
 
 use Test::More;
@@ -20,6 +18,18 @@ sub new
     $self->_init(@_);
 
     return $self;
+}
+
+sub _find_cr
+{
+    my $self = shift;
+
+    if (@_)
+    {
+        $self->{_find_cr} = shift;
+    }
+
+    return $self->{_find_cr};
 }
 
 sub _find_tabs
@@ -72,12 +82,13 @@ sub _abs_path_prune_re
 
 sub _init
 {
-    my ($self, $args) = @_;
+    my ( $self, $args ) = @_;
 
-    $self->_root_path(exists($args->{root}) ? $args->{root} : '.');
-    $self->_filename_regex($args->{filename_regex});
-    $self->_abs_path_prune_re($args->{abs_path_prune_re});
-    $self->_find_tabs($args->{find_tabs});
+    $self->_root_path( exists( $args->{root} ) ? $args->{root} : '.' );
+    $self->_filename_regex( $args->{filename_regex} );
+    $self->_abs_path_prune_re( $args->{abs_path_prune_re} );
+    $self->_find_cr( $args->{find_cr} );
+    $self->_find_tabs( $args->{find_tabs} );
 
     return;
 }
@@ -86,59 +97,67 @@ sub no_trailing_space
 {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
-    my ($self, $blurb) = @_;
+    my ( $self, $blurb ) = @_;
 
     my $num_found = 0;
 
     my $subrule = File::Find::Object::Rule->new;
 
     my $abs_path_prune_re = $self->_abs_path_prune_re();
-    my $find_tabs = $self->_find_tabs();
+    my $find_cr           = $self->_find_cr();
+    my $find_tabs         = $self->_find_tabs();
 
     my $rule = $subrule->or(
         $subrule->new->exec(
             sub {
-                my ($shortname, undef, $path) = @_;
-                return
-                (
-                    ($shortname =~ /\A(?:blib|_build|CVS|\.svn|\.bzr|\.hg|\.git)\z/)
-                        or
+                my ( $shortname, undef, $path ) = @_;
+                return (
                     (
-                        defined($abs_path_prune_re)
-                        && ($path =~ m/$abs_path_prune_re/)
+                        $shortname =~
+                            /\A(?:blib|_build|CVS|\.svn|\.bzr|\.hg|\.git)\z/
                     )
+                        or ( defined($abs_path_prune_re)
+                        && ( $path =~ m/$abs_path_prune_re/ ) )
                 );
             }
         )->prune->discard,
         $subrule->new->file()
-        # ->exec(sub { print STDERR join(",", "Foo==", @_), "\n"; return 1; })
-        ->name($self->_filename_regex()),
+
+          # ->exec(sub { print STDERR join(",", "Foo==", @_), "\n"; return 1; })
+            ->name( $self->_filename_regex() ),
     )->start( $self->_root_path() );
 
+    my $OPEN_MODE = $find_cr ? '<:raw' : '<';
     while ( my $path = $rule->match() )
     {
-        open my $fh, '<', $path;
-        LINES:
-        while (my $line = <$fh>)
+        open( my $fh, $OPEN_MODE, $path );
+    LINES:
+        while ( my $line = <$fh> )
         {
             chomp($line);
-            if ($line =~ /[ \t]+\r?\z/)
+            if ( $line =~ /[ \t]+\r?\z/ )
             {
                 ++$num_found;
-                diag ("Found trailing space in file '$path'");
+                diag("Found trailing space in file '$path'");
                 last LINES;
             }
-            if ($find_tabs and ($line =~ /\t/))
+            if ( $find_tabs and ( $line =~ /\t/ ) )
             {
                 ++$num_found;
-                diag ("Found hard tabs in file '$path'");
+                diag("Found hard tabs in file '$path'");
+                last LINES;
+            }
+            if ( $find_cr and ( $line =~ /\r\z/ ) )
+            {
+                ++$num_found;
+                diag("Found Carriage Returns line endings in file '$path'");
                 last LINES;
             }
         }
-        close ($fh);
+        close($fh);
     }
 
-    return is ($num_found, 0, $blurb);
+    return is( $num_found, 0, $blurb );
 }
 
 1;
@@ -217,8 +236,13 @@ The C<'abs_path_prune_re'> parameter can be used to specify a regular
 expression to prune the absolute path based on, so as to ignore what is
 under there.
 
-The C<'find_tabs'> detects and reports for the presence of hard tabs
+The C<'find_tabs'> option, if set to a true value,
+detects and reports for the presence of hard tabs
 (C<'\t'>).
+
+The C<'find_cr'> option, if set to a true value,
+detects and reports for the presence of carriage
+returns at the end of lines. (DOS-style line endings.)
 
 So
 
