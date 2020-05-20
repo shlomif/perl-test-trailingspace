@@ -9,33 +9,29 @@ use Test::Builder::Tester tests => 8;
 
 use File::Path qw( rmtree );
 
-use File::Find::Object::TreeCreate;
-use Test::TrailingSpace;
+use File::Find::Object::TreeCreate ();
+use Test::TrailingSpace            ();
 
 {
-    my $test_id = "no-trailing-space-1";
+    my $test_id  = "no-trailing-space-1";
     my $test_dir = "t/sample-data/$test_id";
-    my $tree =
-    {
+    my $tree     = {
         'name' => "$test_id/",
-        'subs' =>
-        [
+        'subs' => [
             {
                 'name' => "a/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "b.pm",
+                        'name'     => "b.pm",
                         'contents' => "This file was spotted in the wild.",
                     },
                 ],
             },
             {
                 'name' => "foo/",
-                'subs' =>
-                [
+                'subs' => [
                     {
-                        'name' => "t.door.txt",
+                        'name'     => "t.door.txt",
                         'contents' => "A T Door",
                     },
                     {
@@ -47,11 +43,11 @@ use Test::TrailingSpace;
     };
 
     my $t = File::Find::Object::TreeCreate->new();
-    $t->create_tree("./t/sample-data/", $tree);
+    $t->create_tree( "./t/sample-data/", $tree );
 
     my $finder = Test::TrailingSpace->new(
         {
-            root => $t->get_path("./$test_dir"),
+            root           => $t->get_path("./$test_dir"),
             filename_regex => qr/\.(?:pm|txt)\z/,
         }
     );
@@ -59,34 +55,29 @@ use Test::TrailingSpace;
     test_out("ok 1 - no trailing space FOO");
     $finder->no_trailing_space("no trailing space FOO");
     test_test("no trailing space was reported");
-    rmtree($t->get_path("./$test_dir"))
+    rmtree( $t->get_path("./$test_dir") )
 }
 
 {
-    my $test_id = "with-trailing-space-1";
+    my $test_id  = "with-trailing-space-1";
     my $test_dir = "t/sample-data/$test_id";
-    my $tree =
-    {
+    my $tree     = {
         'name' => "$test_id/",
-        'subs' =>
-        [
+        'subs' => [
             {
                 'name' => "a/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "b.pm",
-                        'contents' =>
-                        "This file.    \nI don't like it.",
+                        'name'     => "b.pm",
+                        'contents' => "This file.    \nI don't like it.",
                     },
                 ],
             },
             {
                 'name' => "foo/",
-                'subs' =>
-                [
+                'subs' => [
                     {
-                        'name' => "t.door.txt",
+                        'name'     => "t.door.txt",
                         'contents' => "A T Door",
                     },
                     {
@@ -98,11 +89,11 @@ use Test::TrailingSpace;
     };
 
     my $t = File::Find::Object::TreeCreate->new();
-    $t->create_tree("./t/sample-data/", $tree);
+    $t->create_tree( "./t/sample-data/", $tree );
 
     my $finder = Test::TrailingSpace->new(
         {
-            root => $t->get_path("./$test_dir"),
+            root           => $t->get_path("./$test_dir"),
             filename_regex => qr/\.(?:pm|txt)\z/,
         }
     );
@@ -110,34 +101,30 @@ use Test::TrailingSpace;
     test_out("not ok 1 - with trailing space CLAM");
     test_fail(+1);
     $finder->no_trailing_space("with trailing space CLAM");
-    test_test(title => "with trailing space was reported", skip_err => 1,);
-    rmtree($t->get_path("./$test_dir"))
+    test_test( title => "with trailing space was reported", skip_err => 1, );
+    rmtree( $t->get_path("./$test_dir") )
 }
 
 {
-    my $test_id = "no-trailing-space-2";
+    my $test_id  = "no-trailing-space-2";
     my $test_dir = "t/sample-data/$test_id";
-    my $tree =
-    {
+    my $tree     = {
         'name' => "$test_id/",
-        'subs' =>
-        [
+        'subs' => [
             {
                 'name' => "a/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "b.pm",
+                        'name'     => "b.pm",
                         'contents' => "This file was spotted in the wild.",
                     },
                 ],
             },
             {
                 'name' => "foo/",
-                'subs' =>
-                [
+                'subs' => [
                     {
-                        'name' => "t.door.txt",
+                        'name'     => "t.door.txt",
                         'contents' => "A T Door",
                     },
                     {
@@ -147,10 +134,9 @@ use Test::TrailingSpace;
             },
             {
                 'name' => "lib/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "foo.pm",
+                        'name'     => "foo.pm",
                         'contents' => "File with trailing space     \nhello\n",
                     }
                 ],
@@ -159,12 +145,12 @@ use Test::TrailingSpace;
     };
 
     my $t = File::Find::Object::TreeCreate->new();
-    $t->create_tree("./t/sample-data/", $tree);
+    $t->create_tree( "./t/sample-data/", $tree );
 
     my $finder = Test::TrailingSpace->new(
         {
-            root => $t->get_path("./$test_dir"),
-            filename_regex => qr/\.(?:pm|txt)\z/,
+            root              => $t->get_path("./$test_dir"),
+            filename_regex    => qr/\.(?:pm|txt)\z/,
             abs_path_prune_re => qr#\blib\b#ms,
         }
     );
@@ -172,33 +158,29 @@ use Test::TrailingSpace;
     test_out("ok 1 - no trailing space BAR");
     $finder->no_trailing_space("no trailing space BAR");
     test_test("no trailing space was reported");
-    rmtree($t->get_path("./$test_dir"))
+    rmtree( $t->get_path("./$test_dir") )
 }
 
 {
-    my $test_id = "no-trailing-space-in-hg";
+    my $test_id  = "no-trailing-space-in-hg";
     my $test_dir = "t/sample-data/$test_id";
-    my $tree =
-    {
+    my $tree     = {
         'name' => "$test_id/",
-        'subs' =>
-        [
+        'subs' => [
             {
                 'name' => "a/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "b.pm",
+                        'name'     => "b.pm",
                         'contents' => "This file was spotted in the wild.",
                     },
                 ],
             },
             {
                 'name' => "foo/",
-                'subs' =>
-                [
+                'subs' => [
                     {
-                        'name' => "t.door.txt",
+                        'name'     => "t.door.txt",
                         'contents' => "A T Door",
                     },
                     {
@@ -208,10 +190,9 @@ use Test::TrailingSpace;
             },
             {
                 'name' => ".hg/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "foo.pm",
+                        'name'     => "foo.pm",
                         'contents' => "File with trailing space     \nhello\n",
                     }
                 ],
@@ -220,11 +201,11 @@ use Test::TrailingSpace;
     };
 
     my $t = File::Find::Object::TreeCreate->new();
-    $t->create_tree("./t/sample-data/", $tree);
+    $t->create_tree( "./t/sample-data/", $tree );
 
     my $finder = Test::TrailingSpace->new(
         {
-            root => $t->get_path("./$test_dir"),
+            root           => $t->get_path("./$test_dir"),
             filename_regex => qr/\.(?:pm|txt)\z/,
         }
     );
@@ -232,23 +213,20 @@ use Test::TrailingSpace;
     test_out("ok 1 - trailing space in .hg is ignored.");
     $finder->no_trailing_space("trailing space in .hg is ignored.");
     test_test("no trailing space was reported");
-    rmtree($t->get_path("./$test_dir"))
+    rmtree( $t->get_path("./$test_dir") )
 }
 
 {
-    my $test_id = "no-trailing-space-in-hg-with-abs-path-re";
+    my $test_id  = "no-trailing-space-in-hg-with-abs-path-re";
     my $test_dir = "t/sample-data/$test_id";
-    my $tree =
-    {
+    my $tree     = {
         'name' => "$test_id/",
-        'subs' =>
-        [
+        'subs' => [
             {
                 'name' => "a/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "b.pm",
+                        'name'     => "b.pm",
                         'contents' => "This file was spotted in the wild.",
                     },
                 ],
@@ -256,10 +234,9 @@ use Test::TrailingSpace;
 
             {
                 'name' => "foo/",
-                'subs' =>
-                [
+                'subs' => [
                     {
-                        'name' => "t.door.txt",
+                        'name'     => "t.door.txt",
                         'contents' => "A T Door",
                     },
                     {
@@ -269,20 +246,18 @@ use Test::TrailingSpace;
             },
             {
                 'name' => ".hg/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "foo.pm",
+                        'name'     => "foo.pm",
                         'contents' => "File with trailing space     \nhello\n",
                     }
                 ],
             },
             {
                 'name' => "lib/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "MyFileWithSpace.pm",
+                        'name'     => "MyFileWithSpace.pm",
                         'contents' => "Trailing space===    \nFoo\n",
                     },
                 ],
@@ -291,12 +266,12 @@ use Test::TrailingSpace;
     };
 
     my $t = File::Find::Object::TreeCreate->new();
-    $t->create_tree("./t/sample-data/", $tree);
+    $t->create_tree( "./t/sample-data/", $tree );
 
     my $finder = Test::TrailingSpace->new(
         {
-            root => $t->get_path("./$test_dir"),
-            filename_regex => qr/\.(?:pm|txt)\z/,
+            root              => $t->get_path("./$test_dir"),
+            filename_regex    => qr/\.(?:pm|txt)\z/,
             abs_path_prune_re => qr#\blib\b#ms,
         }
     );
@@ -304,23 +279,20 @@ use Test::TrailingSpace;
     test_out("ok 1 - trailing space.");
     $finder->no_trailing_space("trailing space.");
     test_test("no trailing space was reported with abs_path_prune_re and .hg");
-    rmtree($t->get_path("./$test_dir"))
+    rmtree( $t->get_path("./$test_dir") )
 }
 
 {
-    my $test_id = "with-trailing-space-prune-hg";
+    my $test_id  = "with-trailing-space-prune-hg";
     my $test_dir = "t/sample-data/$test_id";
-    my $tree =
-    {
+    my $tree     = {
         'name' => "$test_id/",
-        'subs' =>
-        [
+        'subs' => [
             {
                 'name' => "a/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "WithTrailingSpace.pm",
+                        'name'     => "WithTrailingSpace.pm",
                         'contents' => "Trail space here =     \nGamp\n",
                     },
                 ],
@@ -328,10 +300,9 @@ use Test::TrailingSpace;
 
             {
                 'name' => "foo/",
-                'subs' =>
-                [
+                'subs' => [
                     {
-                        'name' => "t.door.txt",
+                        'name'     => "t.door.txt",
                         'contents' => "A T Door",
                     },
                     {
@@ -341,20 +312,18 @@ use Test::TrailingSpace;
             },
             {
                 'name' => ".hg/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "foo.pm",
+                        'name'     => "foo.pm",
                         'contents' => "File with trailing space     \nhello\n",
                     }
                 ],
             },
             {
                 'name' => "lib/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "MyFileWithSpace.pm",
+                        'name'     => "MyFileWithSpace.pm",
                         'contents' => "Trailing space===    \nFoo\n",
                     },
                 ],
@@ -363,12 +332,12 @@ use Test::TrailingSpace;
     };
 
     my $t = File::Find::Object::TreeCreate->new();
-    $t->create_tree("./t/sample-data/", $tree);
+    $t->create_tree( "./t/sample-data/", $tree );
 
     my $finder = Test::TrailingSpace->new(
         {
-            root => $t->get_path("./$test_dir"),
-            filename_regex => qr/\.(?:pm|txt)\z/,
+            root              => $t->get_path("./$test_dir"),
+            filename_regex    => qr/\.(?:pm|txt)\z/,
             abs_path_prune_re => qr#\blib\b#ms,
         }
     );
@@ -376,24 +345,24 @@ use Test::TrailingSpace;
     test_out("not ok 1 - with trailing space OGLO");
     test_fail(+1);
     $finder->no_trailing_space("with trailing space OGLO");
-    test_test(title => "with trailing space was reported for abs_path_prune_re", skip_err => 1,);
-    rmtree($t->get_path("./$test_dir"))
+    test_test(
+        title    => "with trailing space was reported for abs_path_prune_re",
+        skip_err => 1,
+    );
+    rmtree( $t->get_path("./$test_dir") )
 }
 
 {
-    my $test_id = "no-trailing-space-with-unrecognized-filename";
+    my $test_id  = "no-trailing-space-with-unrecognized-filename";
     my $test_dir = "t/sample-data/$test_id";
-    my $tree =
-    {
+    my $tree     = {
         'name' => "$test_id/",
-        'subs' =>
-        [
+        'subs' => [
             {
                 'name' => "a/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "b.pm",
+                        'name'     => "b.pm",
                         'contents' => "This file was spotted in the wild.",
                     },
                 ],
@@ -401,10 +370,9 @@ use Test::TrailingSpace;
 
             {
                 'name' => "foo/",
-                'subs' =>
-                [
+                'subs' => [
                     {
-                        'name' => "t.door.txt",
+                        'name'     => "t.door.txt",
                         'contents' => "A T Door",
                     },
                     {
@@ -414,20 +382,18 @@ use Test::TrailingSpace;
             },
             {
                 'name' => ".hg/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "foo.pm",
+                        'name'     => "foo.pm",
                         'contents' => "File with trailing space     \nhello\n",
                     }
                 ],
             },
             {
                 'name' => "eclim/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "MyFileWithSpace.tar.gz",
+                        'name'     => "MyFileWithSpace.tar.gz",
                         'contents' => "Trailing space===    \nFoo\n",
                     },
                 ],
@@ -436,12 +402,12 @@ use Test::TrailingSpace;
     };
 
     my $t = File::Find::Object::TreeCreate->new();
-    $t->create_tree("./t/sample-data/", $tree);
+    $t->create_tree( "./t/sample-data/", $tree );
 
     my $finder = Test::TrailingSpace->new(
         {
-            root => $t->get_path("./$test_dir"),
-            filename_regex => qr/\.(?:pm|txt)\z/,
+            root              => $t->get_path("./$test_dir"),
+            filename_regex    => qr/\.(?:pm|txt)\z/,
             abs_path_prune_re => qr#\blib\b#ms,
         }
     );
@@ -449,37 +415,33 @@ use Test::TrailingSpace;
     test_out("ok 1 - trailing space.");
     $finder->no_trailing_space("trailing space.");
     test_test("no trailing space was with unrecognized filename.");
-    rmtree($t->get_path("./$test_dir"))
+    rmtree( $t->get_path("./$test_dir") )
 }
 
 {
-    my $test_id = "prune-files";
+    my $test_id  = "prune-files";
     my $test_dir = "t/sample-data/$test_id";
-    my $tree =
-    {
+    my $tree     = {
         'name' => "$test_id/",
-        'subs' =>
-        [
+        'subs' => [
             {
                 'name' => "a/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "b.pm",
+                        'name'     => "b.pm",
                         'contents' => "This file was spotted in the wild.",
                     },
                     {
-                        'name' => "mypatch.patch",
+                        'name'     => "mypatch.patch",
                         'contents' => "+foo\n \n-Lambda\n",
                     },
                 ],
             },
             {
                 'name' => "foo/",
-                'subs' =>
-                [
+                'subs' => [
                     {
-                        'name' => "t.door.txt",
+                        'name'     => "t.door.txt",
                         'contents' => "A T Door",
                     },
                     {
@@ -489,10 +451,9 @@ use Test::TrailingSpace;
             },
             {
                 'name' => ".hg/",
-                subs =>
-                [
+                subs   => [
                     {
-                        'name' => "foo.pm",
+                        'name'     => "foo.pm",
                         'contents' => "File with trailing space     \nhello\n",
                     }
                 ],
@@ -501,13 +462,14 @@ use Test::TrailingSpace;
     };
 
     my $t = File::Find::Object::TreeCreate->new();
-    $t->create_tree("./t/sample-data/", $tree);
+    $t->create_tree( "./t/sample-data/", $tree );
 
     my $finder = Test::TrailingSpace->new(
         {
             root => $t->get_path("./$test_dir"),
+
             # Match all.
-            filename_regex => qr/./,
+            filename_regex    => qr/./,
             abs_path_prune_re => qr#(?:\blib\b)|(?:\.patch\z)#ms,
         }
     );
@@ -515,5 +477,5 @@ use Test::TrailingSpace;
     test_out("ok 1 - trailing space.");
     $finder->no_trailing_space("trailing space.");
     test_test("no trailing space was with unrecognized filename.");
-    rmtree($t->get_path("./$test_dir"))
+    rmtree( $t->get_path("./$test_dir") )
 }
