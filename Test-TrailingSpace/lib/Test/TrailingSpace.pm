@@ -32,18 +32,6 @@ sub _find_cr
     return $self->{_find_cr};
 }
 
-sub _find_tabs
-{
-    my $self = shift;
-
-    if (@_)
-    {
-        $self->{_find_tabs} = shift;
-    }
-
-    return $self->{_find_tabs};
-}
-
 sub _filename_regex
 {
     my $self = shift;
@@ -100,14 +88,13 @@ sub _init
     $self->_filename_regex( $args->{filename_regex} );
     $self->_abs_path_prune_re( $args->{abs_path_prune_re} );
     $self->_find_cr( $args->{find_cr} );
-    $self->_find_tabs( $args->{find_tabs} );
 
     my $OPEN_MODE = $self->_find_cr ? '<:raw' : '<';
     my $cb =
 "sub { my (\$p) = \@_;open( my \$fh, '$OPEN_MODE', \$p );while ( my \$l = <\$fh> ){chomp(\$l);";
     $cb .=
 q#if ( $l =~ /[ \\t]+\\r?\\z/ ){diag("Found trailing space in file '$p'");return 1;}#;
-    if ( $self->_find_tabs )
+    if ( $args->{find_tabs} )
     {
         $cb .=
 q#if ( $l =~ /\\t/ ) { diag("Found hard tabs in file '$p'"); return 1; }#;
