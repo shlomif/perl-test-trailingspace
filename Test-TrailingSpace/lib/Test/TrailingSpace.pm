@@ -103,36 +103,20 @@ sub _init
     $self->_find_tabs( $args->{find_tabs} );
 
     my $OPEN_MODE = $self->_find_cr ? '<:raw' : '<';
-    my $cb        = "sub { my (\$p) = \@_;
-        open( my \$fh, '$OPEN_MODE', \$p );
-        while ( my \$l = <\$fh> )
-        {chomp(\$l);";
-
-    $cb .= q#
-            if ( $l =~ /[ \\t]+\\r?\\z/ )
-            {
-                diag("Found trailing space in file '$p'");
-                return 1;
-            }#;
-
+    my $cb =
+"sub { my (\$p) = \@_;open( my \$fh, '$OPEN_MODE', \$p );while ( my \$l = <\$fh> ){chomp(\$l);";
+    $cb .=
+q#if ( $l =~ /[ \\t]+\\r?\\z/ ){diag("Found trailing space in file '$p'");return 1;}#;
     if ( $self->_find_tabs )
     {
-        $cb .= q#
-            if ( $l =~ /\\t/ )
-            {
-            diag("Found hard tabs in file '$p'");
-                return 1;
-            }#;
+        $cb .=
+q#if ( $l =~ /\\t/ ) { diag("Found hard tabs in file '$p'"); return 1; }#;
     }
 
     if ( $self->_find_cr )
     {
-        $cb .= q#
-            if ( $l =~ /\\r\\z/ )
-            {
-            diag("Found Carriage Returns line endings in file '$p'");
-                return 1;
-            }#;
+        $cb .=
+q# if ( $l =~ /\\r\\z/ ) { diag("Found Carriage Returns line endings in file '$p'"); return 1; }#;
     }
     $cb .= "} return 0;}";
 
