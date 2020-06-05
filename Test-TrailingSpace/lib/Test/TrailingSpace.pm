@@ -80,6 +80,18 @@ sub _abs_path_prune_re
     return $self->{_abs_path_prune_re};
 }
 
+sub _path_cb
+{
+    my $self = shift;
+
+    if (@_)
+    {
+        $self->{_path_cb} = shift;
+    }
+
+    return $self->{_path_cb};
+}
+
 sub _init
 {
     my ( $self, $args ) = @_;
@@ -90,6 +102,45 @@ sub _init
     $self->_find_cr( $args->{find_cr} );
     $self->_find_tabs( $args->{find_tabs} );
 
+    my $OPEN_MODE = $self->_find_cr ? '<:raw' : '<';
+    my $cb        = "sub { my (\$p) = \@_;
+        open( my \$fh, '$OPEN_MODE', \$p );
+        while ( my \$l = <\$fh> )
+        {chomp(\$l);";
+
+    $cb .= q#
+            if ( $l =~ /[ \\t]+\\r?\\z/ )
+            {
+                diag("Found trailing space in file '$p'");
+                return 1;
+            }#;
+
+    if ( $self->_find_tabs )
+    {
+        $cb .= q#
+            if ( $l =~ /\\t/ )
+            {
+            diag("Found hard tabs in file '$p'");
+                return 1;
+            }#;
+    }
+
+    if ( $self->_find_cr )
+    {
+        $cb .= q#
+            if ( $l =~ /\\r\\z/ )
+            {
+            diag("Found Carriage Returns line endings in file '$p'");
+                return 1;
+            }#;
+    }
+    $cb .= "} return 0;}";
+
+    ## no critic
+    $cb = eval($cb);
+    ## use critic
+    die $@ if $@;
+    $self->_path_cb($cb);
     return;
 }
 
@@ -126,35 +177,11 @@ sub no_trailing_space
           # ->exec(sub { print STDERR join(",", "Foo==", @_), "\n"; return 1; })
             ->name( $self->_filename_regex() ),
     )->start( $self->_root_path() );
+    my $cb = $self->_path_cb();
 
-    my $OPEN_MODE = $find_cr ? '<:raw' : '<';
     while ( my $path = $rule->match() )
     {
-        open( my $fh, $OPEN_MODE, $path );
-    LINES:
-        while ( my $line = <$fh> )
-        {
-            chomp($line);
-            if ( $line =~ /[ \t]+\r?\z/ )
-            {
-                ++$num_found;
-                diag("Found trailing space in file '$path'");
-                last LINES;
-            }
-            if ( $find_tabs and ( $line =~ /\t/ ) )
-            {
-                ++$num_found;
-                diag("Found hard tabs in file '$path'");
-                last LINES;
-            }
-            if ( $find_cr and ( $line =~ /\r\z/ ) )
-            {
-                ++$num_found;
-                diag("Found Carriage Returns line endings in file '$path'");
-                last LINES;
-            }
-        }
-        close($fh);
+        $num_found += $cb->($path);
     }
 
     return is( $num_found, 0, $blurb );
