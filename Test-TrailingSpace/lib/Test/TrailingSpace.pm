@@ -138,8 +138,6 @@ sub no_trailing_space
     my $subrule = File::Find::Object::Rule->new;
 
     my $abs_path_prune_re = $self->_abs_path_prune_re();
-    my $find_cr           = $self->_find_cr();
-    my $find_tabs         = $self->_find_tabs();
 
     my $rule = $subrule->or(
         $subrule->new->exec(
