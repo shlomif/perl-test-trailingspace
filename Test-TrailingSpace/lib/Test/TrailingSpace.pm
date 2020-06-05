@@ -96,9 +96,8 @@ q# if ( $l =~ /\\r\\z/ ) { diag("Found Carriage Returns line endings in file '$p
     $cb .= "} return 0;}";
 
     ## no critic
-    $cb = eval($cb);
+    $self->_path_cb( eval($cb) );
     ## use critic
-    $self->_path_cb($cb);
     return;
 }
 
