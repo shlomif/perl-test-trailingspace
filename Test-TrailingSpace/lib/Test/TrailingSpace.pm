@@ -139,7 +139,6 @@ sub _init
     ## no critic
     $cb = eval($cb);
     ## use critic
-    die $@ if $@;
     $self->_path_cb($cb);
     return;
 }
